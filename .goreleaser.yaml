@@ -1,0 +1,35 @@
+# https://goreleaser.com/customization/
+
+version: 2
+
+# what to build
+builds:
+  - env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    goos: ['linux', 'darwin']
+    goarch: ['amd64', 'arm64']
+
+# what to put in the tgz files
+archives:
+  - files:
+      - demo.gif
+      - LICENSE
+      - README.md
+      - vectro.png
+
+# turn stuff off
+announce:
+  skip: true
+changelog:
+  disable: true
+
+# brew tap
+brews:
+  - repository:
+      owner: gurgeous
+      name: homebrew-tap
+    description: The rpn calculator for your terminal.
+    homepage: https://github.com/gurgeous/vectro
+    test: system "#{bin}/vectro --version"

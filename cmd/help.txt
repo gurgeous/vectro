@@ -1,0 +1,21 @@
+Vectro - the rpn calculator. To enter a number, start typing and then press enter.
+
+**+ - * /**   basic math stuff
+
+**n**   (N)egate +/- sign
+**i**   (I)nverse, 1/x
+**l**   (L)og base 10
+**p**   insert (P)i
+**@**   sqrt
+**^**   x ^ y power
+**%**   x modulo y
+**!**   factorial
+
+**s**   (S)wap top two values
+**y**   (Y)ank, copy to clipboard
+**z**   undo
+**q**   quit
+
+**<backspace>**  drop value
+**<enter>**      duplicate value
+**<esc>**        clear
