@@ -33,6 +33,9 @@ demo:
   @qlmanage -p demo.gif
 
 release:
+  @clear
+  @just _banner "test..."
+  just test
   @just _banner "goreleaser release..."
   goreleaser release --clean
   @just _banner "done"
