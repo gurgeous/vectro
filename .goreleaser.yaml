@@ -10,6 +10,7 @@ builds:
       - -trimpath
     goos: ['linux', 'darwin']
     goarch: ['amd64', 'arm64']
+    main: ./cmd
 
 # what to put in the tgz files
 archives:

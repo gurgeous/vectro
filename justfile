@@ -41,6 +41,9 @@ release:
   @just _banner "done"
 
 snapshot:
+  @clear
+  @just _banner "test..."
+  just test
   @just _banner "goreleaser --snapshot..."
   goreleaser release --snapshot --clean
   @just _banner "done"
