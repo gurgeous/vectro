@@ -68,10 +68,10 @@ var (
 		lipgloss.AdaptiveColor{Light: string(Gray600), Dark: string(Gray200)},
 		lipgloss.AdaptiveColor{Light: string(Black), Dark: string(White)},
 	}
-	GradientStyles = Foregrounds(GradientColors)
+	GradientStyles = Map(GradientColors, LG.Foreground)
 
 	TitleColors = []lipgloss.TerminalColor{
 		Red600, Yellow600, Blue600, Green600, Orange600, Purple500,
 	}
-	TitleStyles = Foregrounds(TitleColors)
+	TitleStyles = Map(TitleColors, LG.Foreground)
 )

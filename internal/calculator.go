@@ -25,14 +25,32 @@ func NewCalculator() *Calculator {
 // accessors
 //
 
-func (c *Calculator) GetState() ([]string, []string) {
-	stack := Map(c.stack, func(x Num) string { return x.String() })
-	return stack, c.history
+func (c *Calculator) GetStack() []Num {
+	return c.stack
 }
 
-func (c *Calculator) SetState(stack []string, history []string) {
-	stackInternal := Map(stack, func(s string) Num { return decimal.RequireFromString(s) })
-	c.stack, c.history = stackInternal, history
+func (c *Calculator) GetStackString() []string {
+	return Map(c.stack, func(x Num) string { return x.String() })
+}
+
+func (c *Calculator) GetHistory() []string {
+	return c.history
+}
+
+func (c *Calculator) SetStack(stack []Num) {
+	c.stack = stack
+}
+
+func (c *Calculator) SetStackString(stack []string) {
+	c.SetStack(Map(stack, decimal.RequireFromString))
+}
+
+func (c *Calculator) SetHistory(history []string) {
+	c.history = history
+}
+
+func (c *Calculator) GetUndo() [][]Num {
+	return c.undo
 }
 
 // returns the 8 visible lines of the stack
@@ -94,7 +112,7 @@ func (c *Calculator) Len() int {
 }
 
 func (c *Calculator) Push(values ...Num) {
-	var normalized = Map(values, func(x Num) Num { return Normalize(x) })
+	var normalized = Map(values, Normalize)
 	c.stack = TruncateStart(Push(c.stack, normalized...), MaxArraySize)
 }
 
@@ -117,7 +135,7 @@ func (c *Calculator) PushInt(values ...int) {
 }
 
 func (c *Calculator) PushFloat64(values ...float64) {
-	c.Push(Map(values, func(x float64) Num { return decimal.NewFromFloat(x) })...)
+	c.Push(Map(values, decimal.NewFromFloat)...)
 }
 
 func (c *Calculator) PopInt() int {

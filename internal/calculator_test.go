@@ -96,7 +96,7 @@ func TestCalculatorRunValid(t *testing.T) {
 	c := NewCalculator()
 	assert.Error(t, c.Run("ADD"))
 	c.PushInt(123, 456)
-	assert.Nil(t, c.Run("ADD"))
+	assert.NoError(t, c.Run("ADD"))
 }
 
 func TestCalculatorRunHistory(t *testing.T) {

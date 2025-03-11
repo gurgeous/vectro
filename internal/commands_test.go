@@ -37,7 +37,7 @@ func TestEachCommand(t *testing.T) {
 			c.PushFloat64(tc.inputs...)
 			testRun(c, tc.cmd)
 
-			var outputs = Map(c.stack, func(x Num) float64 { f, _ := x.Float64(); return f })
+			outputs := Map(c.GetStack(), func(x Num) float64 { return x.InexactFloat64() })
 			assert.Equal(t, tc.outputs, outputs)
 		})
 	}
@@ -67,17 +67,17 @@ func TestCommandsValid(t *testing.T) {
 	assert.Error(t, validFact(c))
 	assert.Error(t, validGt0(c))
 	assert.Error(t, validGte0(c))
-	assert.Nil(t, validNot0(c))
+	assert.NoError(t, validNot0(c))
 	c.PushInt(0)
-	assert.Nil(t, validFact(c))
+	assert.NoError(t, validFact(c))
 	assert.Error(t, validGt0(c))
-	assert.Nil(t, validGte0(c))
+	assert.NoError(t, validGte0(c))
 	assert.Error(t, validNot0(c))
 	c.PushInt(1)
-	assert.Nil(t, validFact(c))
-	assert.Nil(t, validGt0(c))
-	assert.Nil(t, validGte0(c))
-	assert.Nil(t, validNot0(c))
+	assert.NoError(t, validFact(c))
+	assert.NoError(t, validGt0(c))
+	assert.NoError(t, validGte0(c))
+	assert.NoError(t, validNot0(c))
 
 	// few more errors cases for validFact
 	for _, x := range []float64{0.5, 9999} {

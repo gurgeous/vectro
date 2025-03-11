@@ -11,9 +11,9 @@ import (
 const statePath = "vectro/state.yml"
 
 type state struct {
-	Version int
-	Stack   []string
-	History []string
+	Version int      `yaml:"version"`
+	Stack   []string `yaml:"stack"`
+	History []string `yaml:"history"`
 }
 
 // load calculator state. bail if we get any kind of error
@@ -28,27 +28,31 @@ func Load(c *internal.Calculator) {
 	}
 
 	var state state
-	yaml.Unmarshal(data, &state)
+	if err = yaml.Unmarshal(data, &state); err != nil {
+		return // ignore
+	}
 	if state.Version != 1 {
 		return // ignore
 	}
-	c.SetState(state.Stack, state.History)
+
+	c.SetStackString(state.Stack)
+	c.SetHistory(state.History)
 }
 
 // save calculator state. bail if we get any kind of error
 func Save(c *internal.Calculator) {
-	stack, history := c.GetState()
-
-	data, err := yaml.Marshal(state{Version: 1, Stack: stack, History: history})
+	state := state{Version: 1, Stack: c.GetStackString(), History: c.GetHistory()}
+	data, err := yaml.Marshal(state)
 	if err != nil {
 		panic(err)
 	}
 
 	path, err := xdg.ConfigFile(statePath)
 	if err != nil {
-		return // ignore
+		panic(err)
 	}
-	if err = os.WriteFile(path, data, 0600); err != nil {
-		return // ignore
+	err = os.WriteFile(path, data, 0600)
+	if err != nil {
+		panic(err)
 	}
 }

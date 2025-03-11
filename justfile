@@ -7,6 +7,9 @@ init:
   asdf install
   brew install gifsicle goreleaser watchexec
 
+lint:
+  @golangci-lint run
+
 # go run
 run *ARGS:
   @go run ./... {{ARGS}}

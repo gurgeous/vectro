@@ -48,7 +48,7 @@ func TestNormalize(t *testing.T) {
 
 func TestFileExists(t *testing.T) {
 	// Create a temporary file for testing
-	tmpFile, err := os.CreateTemp("", "test")
+	tmpFile, err := os.CreateTemp(t.TempDir(), "test")
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}

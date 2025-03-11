@@ -33,7 +33,7 @@ func IsInt(value Num) bool {
 
 // if x seems to be an Int, round it
 func Normalize(x Num) Num {
-	x = x.Round(int32(Precision))
+	x = x.Round(int32(Precision)) //nolint:gosec
 	if IsInt(x) {
 		x = x.Round(0)
 	}
@@ -57,12 +57,12 @@ func Factorial(x Num) Num {
 
 // ln(x)
 func Ln(x Num) Num {
-	y, _ := x.Ln(8)
+	y, _ := x.Ln(10)
 	return y
 }
 
 func Pow(x, y Num) Num {
-	z, _ := x.PowWithPrecision(y, int32(Precision))
+	z, _ := x.PowWithPrecision(y, int32(Precision)) //nolint:gosec
 	return z
 }
 
@@ -182,12 +182,5 @@ func ClipLines(lines []string, style lipgloss.Style) []string {
 	}
 	return Map(Truncate(lines, h), func(s string) string {
 		return ansi.Truncate(s, w, "...")
-	})
-}
-
-// []color => []style w/ foreground
-func Foregrounds(colors []lipgloss.TerminalColor) []lipgloss.Style {
-	return Map(colors, func(c lipgloss.TerminalColor) lipgloss.Style {
-		return LG.Foreground(c)
 	})
 }

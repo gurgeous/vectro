@@ -17,6 +17,7 @@ import (
 	"github.com/gurgeous/vectro/internal"
 )
 
+//nolint:recvcheck // bubbletea required Update
 type Model struct {
 	args Args
 	// underlying calculator for math
@@ -195,16 +196,16 @@ func (m Model) View() string {
 		// too narrow? hide help
 		boxLeft, box3 = boxMain, internal.NewBox(0, 0)
 	}
-	// border + padding.top + stack + text + padding.bot + border
-	stackHeight := 1 + internal.StackStyle.GetPaddingTop() + internal.StackSize + 1 + internal.StackStyle.GetPaddingBottom() + 1
+	// border + padding.vert + stack + text + border
+	stackHeight := internal.StackStyle.GetVerticalPadding() + 1 + internal.StackSize + 1 + 1
 	box1, box2 := boxLeft.CutTop(stackHeight)
 	if box2.GetHeight() < 5 {
 		// too short? hide history
 		box1, box2 = boxLeft, internal.NewBox(0, 0)
 	}
 
-	// too cramped?
 	if box1.GetWidth() < 20 || box1.GetHeight() < stackHeight {
+		// too cramped?
 		style := boxAll.Apply(internal.CrampedStyle)
 		return style.Render("vectro is feeling cramped, make your terminal bigger!")
 	}
@@ -239,7 +240,6 @@ func (m Model) View() string {
 		left = str1
 	}
 	return lipgloss.JoinVertical(0, lipgloss.JoinHorizontal(0, left, str3), str4)
-
 }
 
 // handle vhs stuff
@@ -292,11 +292,12 @@ func (m *Model) inputNeg() error {
 	if len(s) == 0 {
 		return fmt.Errorf("%s: %s", internal.NEG, "too few arguments")
 	}
-	if strings.HasPrefix(s, "-") {
+	switch {
+	case strings.HasPrefix(s, "-"):
 		s = "+" + s[1:]
-	} else if strings.HasPrefix(s, "+") {
+	case strings.HasPrefix(s, "+"):
 		s = "-" + s[1:]
-	} else {
+	default:
 		s = "-" + s
 	}
 	m.input.SetValue(s)
@@ -412,7 +413,7 @@ func (m Model) status(style lipgloss.Style) string {
 // main
 //
 
-// set at build time
+// set at build time by goreleaser
 var (
 	date    = "today"
 	version = "development"

@@ -4,13 +4,14 @@ import (
 	"errors"
 
 	"github.com/atotto/clipboard"
+	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 )
 
 type Command struct {
 	Name  string
-	key   string
 	fn    interface{}
+	key   string
 	fmt   string
 	valid func(*Calculator) error
 }
@@ -41,8 +42,9 @@ var Commands = []Command{
 	{Name: "UNDO", key: "z", fn: undo, valid: validUndo},
 }
 
-var CommandsByKey = map[string]Command{}
-var CommandsByName = map[string]Command{}
+var CommandsByName = lo.KeyBy(Commands, func(c Command) string { return c.Name })
+var CommandsByKey = lo.KeyBy(lo.Filter(Commands, func(c Command, _ int) bool { return c.key != "" }),
+	func(c Command) string { return c.key })
 
 // these are sometimes run directly
 const (
@@ -53,45 +55,31 @@ const (
 	YANK = "YANK"
 )
 
-func init() {
-	for _, cmd := range Commands {
-		if cmd.key != "" {
-			CommandsByKey[cmd.key] = cmd
-		}
-		CommandsByName[cmd.Name] = cmd
-	}
-}
-
 //
 // commands
 //
 
-func add(c *Calculator, a, b Num) Num { return a.Add(b) }
+func add(_ *Calculator, a, b Num) Num { return a.Add(b) }
 func clear(c *Calculator)             { c.Clear() }
-func div(c *Calculator, a, b Num) Num { return a.Div(b) }
-func drop(c *Calculator, a Num)       { /* nop */ }
+func div(_ *Calculator, a, b Num) Num { return a.Div(b) }
+func drop(_ *Calculator, _ Num)       { /* nop */ }
 func dup(c *Calculator, a Num)        { c.Push(a, a) }
-func fact(c *Calculator, a Num) Num   { return Factorial(a) }
+func fact(_ *Calculator, a Num) Num   { return Factorial(a) }
 func swap(c *Calculator, a, b Num)    { c.Push(b, a) }
-func inv(c *Calculator, a Num) Num    { return One.Div(a) }
-func ln(c *Calculator, a Num) Num     { return Ln(a) }
-func log(c *Calculator, a Num) Num    { return Ln(a).Div(Ln10) }
-func mod(c *Calculator, a, b Num) Num { return a.Mod(b) }
-func mul(c *Calculator, a, b Num) Num { return a.Mul(b) }
-func neg(c *Calculator, a Num) Num    { return a.Neg() }
-func pi(c *Calculator) Num            { return Pi }
-func pow(c *Calculator, a, b Num) Num { return Pow(a, b) }
-func sqrt(c *Calculator, a Num) Num   { return Pow(a, Half) }
-func sub(c *Calculator, a, b Num) Num { return a.Sub(b) }
-
-// more complicated
+func inv(_ *Calculator, a Num) Num    { return One.Div(a) }
+func ln(_ *Calculator, a Num) Num     { return Ln(a) }
+func log(_ *Calculator, a Num) Num    { return Ln(a).Div(Ln10) }
+func mod(_ *Calculator, a, b Num) Num { return a.Mod(b) }
+func mul(_ *Calculator, a, b Num) Num { return a.Mul(b) }
+func neg(_ *Calculator, a Num) Num    { return a.Neg() }
+func pi(_ *Calculator) Num            { return Pi }
+func pow(_ *Calculator, a, b Num) Num { return Pow(a, b) }
+func sqrt(_ *Calculator, a Num) Num   { return Pow(a, Half) }
+func sub(_ *Calculator, a, b Num) Num { return a.Sub(b) }
+func undo(c *Calculator)              { c.Undo() }
 func yank(c *Calculator, a Num) {
 	c.Push(a)
-	clipboard.WriteAll(a.String())
-}
-
-func undo(c *Calculator) {
-	c.Undo()
+	_ = clipboard.WriteAll(a.String())
 }
 
 //
