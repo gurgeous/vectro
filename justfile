@@ -1,14 +1,20 @@
 _default:
   @just --list
 
+check:
+  @just _banner check: lint... ; just lint
+  @just _banner check: test... ; just test
+  @just _banner check: done
+
+
 init:
   asdf plugin add golang || true
   asdf plugin add nodejs || true
   asdf install
   brew install gifsicle golangci goreleaser watchexec
 
-lint:
-  @golangci-lint run
+lint *ARGS:
+  @golangci-lint run ./... {{ARGS}}
 
 # go run
 run *ARGS:
