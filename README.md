@@ -16,13 +16,13 @@ Vectro is an [rpn](https://en.wikipedia.org/wiki/Reverse_Polish_notation) calcul
 
 ## Installation
 
-On MacOS:
+On MacOS use brew:
 
 ```
 $ brew install gurgeous/tap/vectro
 ```
 
-Or for Linux, [download the latest release](https://github.com/gurgeous/vectro/releases/latest).
+For Linux and Windows, see the [latest release on github](https://github.com/gurgeous/vectro/releases/latest). You'll find MacOS builds in there too, but they are difficult to run since they are unsigned.
 
 Then run vectro like this:
 
@@ -37,7 +37,7 @@ $ vectro
 - Niceties like Paste (yank) and Undo, error messages, etc.
 
 ## Future Work
-- advanced operation (autocomplete, shift-ctrl-p)
+- advanced ops (autocomplete, shift-ctrl-p)
 - animate when stack changes
 - theming
 
