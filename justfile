@@ -34,6 +34,7 @@ demo:
 
 release:
   @clear
+  @if [ -z "${GITHUB_TOKEN:-}" ]; then just _fatal "GITHUB_TOKEN is required" ; fi
   @just _banner "test..."
   just test
   @just _banner "goreleaser release..."
@@ -54,3 +55,6 @@ snapshot:
 
 _banner *ARGS:
   @printf '\e[42;37;1m[%s] %-72s \e[m\n' "$(date +%H:%M:%S)" "{{ARGS}}"
+_fatal *ARGS:
+  @printf '\e[41;37;1m[%s] %-72s \e[m\n' "$(date +%H:%M:%S)" "{{ARGS}}"
+  @exit 1
