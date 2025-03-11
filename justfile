@@ -5,7 +5,7 @@ init:
   asdf plugin add golang || true
   asdf plugin add nodejs || true
   asdf install
-  brew install gifsicle goreleaser watchexec
+  brew install gifsicle golangci goreleaser watchexec
 
 lint:
   @golangci-lint run
