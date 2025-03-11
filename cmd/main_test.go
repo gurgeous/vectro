@@ -33,7 +33,7 @@ func TestAll(t *testing.T) {
 	assert.Equal(t, 3, m.c.PopInt())
 
 	// quit
-	m, msg := testUpdate(m, testKeyMsg("q"))
+	_, msg := testUpdate(m, testKeyMsg("q"))
 	assert.Equal(t, reflect.TypeOf(msg()), reflect.TypeOf(tea.QuitMsg{}))
 }
 

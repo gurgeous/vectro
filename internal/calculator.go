@@ -3,7 +3,9 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"slices"
 
+	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 )
 
@@ -25,14 +27,32 @@ func NewCalculator() *Calculator {
 // accessors
 //
 
-func (c *Calculator) GetState() ([]string, []string) {
-	stack := Map(c.stack, func(x Num) string { return x.String() })
-	return stack, c.history
+func (c *Calculator) GetStack() []Num {
+	return c.stack
 }
 
-func (c *Calculator) SetState(stack []string, history []string) {
-	stackInternal := Map(stack, func(s string) Num { return decimal.RequireFromString(s) })
-	c.stack, c.history = stackInternal, history
+func (c *Calculator) GetStackString() []string {
+	return MapV(c.stack, func(x Num) string { return x.String() })
+}
+
+func (c *Calculator) GetHistory() []string {
+	return c.history
+}
+
+func (c *Calculator) SetStack(stack []Num) {
+	c.stack = stack
+}
+
+func (c *Calculator) SetStackString(stack []string) {
+	c.SetStack(MapV(stack, decimal.RequireFromString))
+}
+
+func (c *Calculator) SetHistory(history []string) {
+	c.history = history
+}
+
+func (c *Calculator) GetUndo() [][]Num {
+	return c.undo
 }
 
 // returns the 8 visible lines of the stack
@@ -54,7 +74,7 @@ func (c *Calculator) GetDisplay() []string {
 //
 
 func (c *Calculator) snapshotForUndo() {
-	c.undo = TruncateStart(Push(c.undo, Dup(c.stack)), UndoSize)
+	c.undo = TruncateStart(Push(c.undo, slices.Clone(c.stack)), UndoSize)
 }
 
 func (c *Calculator) Undo() {
@@ -94,7 +114,7 @@ func (c *Calculator) Len() int {
 }
 
 func (c *Calculator) Push(values ...Num) {
-	var normalized = Map(values, func(x Num) Num { return Normalize(x) })
+	var normalized = MapV(values, Normalize)
 	c.stack = TruncateStart(Push(c.stack, normalized...), MaxArraySize)
 }
 
@@ -105,7 +125,7 @@ func (c *Calculator) Pop() Num {
 }
 
 func (c *Calculator) Peek() Num {
-	return Last(c.stack)
+	return lo.Must(lo.Last(c.stack))
 }
 
 //
@@ -113,11 +133,11 @@ func (c *Calculator) Peek() Num {
 //
 
 func (c *Calculator) PushInt(values ...int) {
-	c.Push(Map(values, func(x int) Num { return decimal.NewFromInt(int64(x)) })...)
+	c.Push(MapV(values, func(x int) Num { return decimal.NewFromInt(int64(x)) })...)
 }
 
 func (c *Calculator) PushFloat64(values ...float64) {
-	c.Push(Map(values, func(x float64) Num { return decimal.NewFromFloat(x) })...)
+	c.Push(MapV(values, decimal.NewFromFloat)...)
 }
 
 func (c *Calculator) PopInt() int {

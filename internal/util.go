@@ -8,6 +8,8 @@ import (
 
 	"github.com/charmbracelet/lipgloss"
 	"github.com/charmbracelet/x/ansi"
+	"github.com/samber/lo"
+	"github.com/samber/lo/mutable"
 	"github.com/shopspring/decimal"
 )
 
@@ -33,7 +35,7 @@ func IsInt(value Num) bool {
 
 // if x seems to be an Int, round it
 func Normalize(x Num) Num {
-	x = x.Round(int32(Precision))
+	x = x.Round(int32(Precision)) //nolint:gosec
 	if IsInt(x) {
 		x = x.Round(0)
 	}
@@ -57,13 +59,11 @@ func Factorial(x Num) Num {
 
 // ln(x)
 func Ln(x Num) Num {
-	y, _ := x.Ln(8)
-	return y
+	return lo.Must(x.Ln(8))
 }
 
 func Pow(x, y Num) Num {
-	z, _ := x.PowWithPrecision(y, int32(Precision))
-	return z
+	return lo.Must(x.PowWithPrecision(y, int32(Precision))) //nolint:gosec
 }
 
 //
@@ -80,58 +80,29 @@ func FileExists(name string) bool {
 // array generics
 //
 
-func Dup[E any](s []E) []E {
-	return append([]E(nil), s...)
-}
-
-func Filter[E any](s []E, fn func(E) bool) []E {
-	result := []E{}
-	for _, e := range s {
-		if fn(e) {
-			result = append(result, e)
-		}
-	}
-	return result
-}
-
 // map from one array to another
-func Map[E, F any](s []E, fn func(E) F) []F {
-	return MapWithIndex(s, func(_ int, e E) F {
+// https://github.com/samber/lo/issues/263
+func MapV[E, F any](s []E, fn func(E) F) []F {
+	return lo.Map(s, func(e E, _ int) F {
 		return fn(e)
 	})
 }
 
-func Last[E any](s []E) E {
-	return s[len(s)-1]
-}
-
-// map from one array to another
-func MapWithIndex[E, F any](s []E, fn func(int, E) F) []F {
-	result := make([]F, len(s))
-	for ii, e := range s {
-		result[ii] = fn(ii, e)
-	}
-	return result
-}
-
+// https://github.com/samber/lo/pull/588
 func Pop[E any](s []E) (E, []E) {
 	return s[len(s)-1], s[:len(s)-1]
 }
 
+// https://github.com/samber/lo/pull/588
 func Push[E any](s []E, values ...E) []E {
 	return append(s, values...)
 }
 
-func Repeat[E any](v E, len int) []E {
-	return Map(Sequence(len), func(_ int) E { return v })
-}
-
-// return reversed copy of array
-func Reverse[E any](s []E) []E {
-	result := make([]E, len(s))
-	copy(result, s)
-	slices.Reverse(result)
-	return result
+// return reversed copy of array. The lo one is mutable.
+func Reversed[E any](s []E) []E {
+	var dup = slices.Clone(s)
+	mutable.Reverse(dup)
+	return dup
 }
 
 func Sequence(len int) []int {
@@ -142,6 +113,7 @@ func Sequence(len int) []int {
 	return result
 }
 
+// https://github.com/samber/lo/pull/588
 func Shift[E any](s []E) (E, []E) {
 	return s[0], s[1:]
 }
@@ -154,6 +126,7 @@ func TruncateStart[E any](s []E, maxLen int) []E {
 	return s
 }
 
+// Truncate an array
 func Truncate[E any](s []E, maxLen int) []E {
 	if len(s) > maxLen {
 		s = s[:maxLen]
@@ -165,14 +138,6 @@ func Truncate[E any](s []E, maxLen int) []E {
 // styling
 //
 
-// look for **xxx**, apply a style
-func StyleBetweenStars(str string, style lipgloss.Style) string {
-	var re = regexp.MustCompile(`(?s)\*\*(.*?)\*\*`)
-	return re.ReplaceAllStringFunc(str, func(s string) string {
-		return style.Render(s[2 : len(s)-2])
-	})
-}
-
 // fit lines into w/h of style. Truncates both horizontally and vertically.
 func ClipLines(lines []string, style lipgloss.Style) []string {
 	w := style.GetWidth() - style.GetHorizontalPadding()
@@ -180,14 +145,15 @@ func ClipLines(lines []string, style lipgloss.Style) []string {
 	if w <= 0 || h <= 0 {
 		return nil
 	}
-	return Map(Truncate(lines, h), func(s string) string {
+	return MapV(Truncate(lines, h), func(s string) string {
 		return ansi.Truncate(s, w, "...")
 	})
 }
 
-// []color => []style w/ foreground
-func Foregrounds(colors []lipgloss.TerminalColor) []lipgloss.Style {
-	return Map(colors, func(c lipgloss.TerminalColor) lipgloss.Style {
-		return LG.Foreground(c)
+// look for **xxx**, apply a style
+func StyleBetweenStars(str string, style lipgloss.Style) string {
+	var re = regexp.MustCompile(`(?s)\*\*(.*?)\*\*`)
+	return re.ReplaceAllStringFunc(str, func(s string) string {
+		return style.Render(s[2 : len(s)-2])
 	})
 }
