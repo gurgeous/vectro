@@ -12,6 +12,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 
 	"github.com/gurgeous/vectro/internal"
@@ -369,7 +370,7 @@ func (m Model) title() string {
 }
 
 func (m Model) stack(style lipgloss.Style) string {
-	stack := internal.MapWithIndex(m.c.GetDisplay(), func(ii int, str string) string {
+	stack := lo.Map(m.c.GetDisplay(), func(str string, ii int) string {
 		array := strings.Split(str, ":")
 		return internal.IndexStyle.Render(array[0]+":") + internal.GradientStyles[ii].Render(array[1])
 	})
@@ -381,7 +382,7 @@ func (m Model) stack(style lipgloss.Style) string {
 
 func (m Model) history(style lipgloss.Style) string {
 	history := m.c.History()
-	history = internal.Reverse(internal.ClipLines(internal.Reverse(history), style))
+	history = internal.Reversed(internal.ClipLines(internal.Reversed(history), style))
 	return strings.Join(history, "\n")
 }
 

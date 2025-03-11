@@ -84,7 +84,9 @@ func TestCalculatorRunFn(t *testing.T) {
 	for _, tc := range tests {
 		undos := len(c.undo)
 		c.Clear()
-		c.PushInt(Repeat(123, tc.inputs)...)
+		for range tc.inputs {
+			c.PushInt(123)
+		}
 		c.Run(tc.cmd)
 		assert.Equal(t, tc.outputs, c.Len())
 		assert.Equal(t, undos+1, len(c.undo)) // did the undo stack grow?

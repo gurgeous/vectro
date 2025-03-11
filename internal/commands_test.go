@@ -37,7 +37,7 @@ func TestEachCommand(t *testing.T) {
 			c.PushFloat64(tc.inputs...)
 			testRun(c, tc.cmd)
 
-			outputs := Map(c.GetStack(), func(x Num) float64 { return x.InexactFloat64() })
+			outputs := MapV(c.GetStack(), func(x Num) float64 { return x.InexactFloat64() })
 			assert.Equal(t, tc.outputs, outputs)
 		})
 	}

@@ -3,7 +3,9 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"slices"
 
+	"github.com/samber/lo"
 	"github.com/shopspring/decimal"
 )
 
@@ -30,7 +32,7 @@ func (c *Calculator) GetStack() []Num {
 }
 
 func (c *Calculator) GetStackString() []string {
-	return Map(c.stack, func(x Num) string { return x.String() })
+	return MapV(c.stack, func(x Num) string { return x.String() })
 }
 
 func (c *Calculator) GetHistory() []string {
@@ -42,7 +44,7 @@ func (c *Calculator) SetStack(stack []Num) {
 }
 
 func (c *Calculator) SetStackString(stack []string) {
-	c.SetStack(Map(stack, decimal.RequireFromString))
+	c.SetStack(MapV(stack, decimal.RequireFromString))
 }
 
 func (c *Calculator) SetHistory(history []string) {
@@ -72,7 +74,7 @@ func (c *Calculator) GetDisplay() []string {
 //
 
 func (c *Calculator) snapshotForUndo() {
-	c.undo = TruncateStart(Push(c.undo, Dup(c.stack)), UndoSize)
+	c.undo = TruncateStart(Push(c.undo, slices.Clone(c.stack)), UndoSize)
 }
 
 func (c *Calculator) Undo() {
@@ -112,7 +114,7 @@ func (c *Calculator) Len() int {
 }
 
 func (c *Calculator) Push(values ...Num) {
-	var normalized = Map(values, Normalize)
+	var normalized = MapV(values, Normalize)
 	c.stack = TruncateStart(Push(c.stack, normalized...), MaxArraySize)
 }
 
@@ -123,7 +125,7 @@ func (c *Calculator) Pop() Num {
 }
 
 func (c *Calculator) Peek() Num {
-	return Last(c.stack)
+	return lo.Must(lo.Last(c.stack))
 }
 
 //
@@ -131,11 +133,11 @@ func (c *Calculator) Peek() Num {
 //
 
 func (c *Calculator) PushInt(values ...int) {
-	c.Push(Map(values, func(x int) Num { return decimal.NewFromInt(int64(x)) })...)
+	c.Push(MapV(values, func(x int) Num { return decimal.NewFromInt(int64(x)) })...)
 }
 
 func (c *Calculator) PushFloat64(values ...float64) {
-	c.Push(Map(values, decimal.NewFromFloat)...)
+	c.Push(MapV(values, decimal.NewFromFloat)...)
 }
 
 func (c *Calculator) PopInt() int {

@@ -72,33 +72,9 @@ func TestFileExists(t *testing.T) {
 	}
 }
 
-func TestFilter(t *testing.T) {
-	numbers := []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}
-	result := Filter(numbers, func(n int) bool {
-		return n%2 == 0
-	})
-	assert.Equal(t, []int{2, 4, 6, 8, 10}, result)
-}
-
-func TestMap(t *testing.T) {
-	numbers := []int{1, 2, 3, 4, 5}
-	result := Map(numbers, func(n int) string {
-		return "Item " + string(rune('0'+n))
-	})
-	assert.Equal(t, []string{"Item 1", "Item 2", "Item 3", "Item 4", "Item 5"}, result)
-}
-
-func TestMapWithIndex(t *testing.T) {
-	numbers := []int{10, 20, 30, 40, 50}
-	result := MapWithIndex(numbers, func(i int, n int) int {
-		return n * i
-	})
-	assert.Equal(t, []int{0, 20, 60, 120, 200}, result)
-}
-
 func TestReverse(t *testing.T) {
 	numbers := []int{1, 2, 3, 4, 5}
-	assert.Equal(t, []int{5, 4, 3, 2, 1}, Reverse(numbers))
+	assert.Equal(t, []int{5, 4, 3, 2, 1}, Reversed(numbers))
 }
 
 func TestStyleBetweenStars(t *testing.T) {
