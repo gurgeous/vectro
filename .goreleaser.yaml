@@ -4,12 +4,11 @@ version: 2
 
 # what to build
 builds:
-  - env:
-      - CGO_ENABLED=0
-    flags:
-      - -trimpath
-    goos: ['linux', 'darwin']
+  - env: ['CGO_ENABLED=0']
+    flags: ['-trimpath']
+    goos: ['linux', 'darwin', 'windows']
     goarch: ['amd64', 'arm64']
+    ignore: [{ goos: 'windows', goarch: 'arm64' }]
     main: ./cmd
 
 # what to put in the tgz files

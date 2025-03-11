@@ -37,8 +37,20 @@ $ vectro
 - Niceties like Paste (yank) and Undo, error messages, etc.
 
 ## Future Work
+- advanced operation (autocomplete, shift-ctrl-p)
 - animate when stack changes
-- base - (b)base (2/8/10/16) (& - and, | - or, < > for shifting)
-- deg, rad, trig
-- advanced calculations (autocomplete, shift-ctrl-p)
 - theming
+
+## Operators Not Yet Implemented
+- abs / ln / square
+- deg/rad / cos/acos / sin/asin / tan/atan
+- lcm/gcd / prime (prime factorization)
+- floor/ceil/round
+- bin/oct/hex / << >> & | ^ ~
+- rgb / hsl / oklch
+
+## Special Thankss
+
+These open source projects helped make Vectro possible. Thanks everybody!
+
+- [Go Releaser](https://goreleaser.com/), [Lip Gloss](https://github.com/charmbracelet/lipgloss) & [VHS](https://github.com/charmbracelet/vhs), [decimal](https://github.com/shopspring/decimal), [just](https://github.com/casey/just).
