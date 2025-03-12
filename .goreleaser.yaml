@@ -18,6 +18,7 @@ archives:
       - README.md
       - vectro.png
     format_overrides: [{ goos: 'windows', formats: ['zip'] }]
+    wrap_in_directory: true
 
 # turn stuff off
 announce: { skip: true }
